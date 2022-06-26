@@ -12,25 +12,28 @@ contract Token{
     address[] public users; //数组类型
     address public feeAccount;//费用地址
     uint256 public feeNum;//费用比例
+    address public from;
 
 //构造函数；在部署合约前先添加一个地址，不添加
      constructor (address _feeAccount,uint256 _feeNum)public{
         feeAccount=_feeAccount;
         feeNum=_feeNum;//solidity不识别小数，所以次数在后期计算的话要除以相应的比例 
                         //如：费用千分之3,部署是输入3 后期计算比例就是3/1000
-        ownerAddress=msg.sender;//部署合约的发起者为权限拥有者
+        ownerAddress=msg.sender;//部署合约的发起者为权限拥有者   msg.sender谁调用了它就返回谁的地址
+       // from=msg.sender;
      }
 
-     //判断必须是owner,如果不是停止执行后面的函数
+     //判断必须是owner,如果不是,停止执行后面的函数
     modifier onlyOwner{
         require(msg.sender == ownerAddress,"isn't owner");
         _;   //占位符
     }
 
-    //部署合约后修改费用比例  耍无赖bug 
+    //部署合约后修改费用比例  耍无赖bug 接受地址皆可改变 只要你想
     function setfeeNum(uint256 _feeNum)public onlyOwner{
         feeNum=_feeNum;
     }
+
 //设置管理员地址.
    
 
@@ -42,15 +45,20 @@ contract Token{
 
 
 //从地址a转账到另一个地址 此处可以加判断转出地址代币是否足够  转账功能已实现 
-     function tansferfrom(address form,address to,uint256 amount) public {
-        balance[form] -= amount;
-         balance[to] += amount;
-  }
+    
 
-    function tansfer(address form,uint256 amount) public {
-            balance[form] -= amount;
+     function tansferfrom(address to,uint256 amount) public {
+       if  (balance[msg.sender]<=amount){
+            balance[msg.sender] -= amount;
+            balance[to] += amount;
+       }
+       else{
+          // balance[msg.sender];
+       }
+       
     }
 
+    
 //判断转出地址代币事故足够 报错，不知道什么原因 
 //  if（amount<=blance[form]）{   
 //            balance[form] -= amount;
