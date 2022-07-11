@@ -29,20 +29,14 @@ contract  repay{
         IERC20(axstoken).transfer(msg.sender,msg.value*100);        
     }
 
-    // IERC20 public usdttoken;
-    // function receiveUSDT() public{
-    //     IERC20(usdttoken).transferFrom(msg.sender,address(this), uint256 amount);
-    // }
 
 
 
+//BNB
 //     function transferBNB(address to,uint256 amount)public{
 //         payable(to).transfer(amount);
 //     }
 
-//     function sendBNB(address to,uint256 amount)public{
-//         payable(to).send(amount);
-//     }
 
 
 // //时间戳
@@ -71,29 +65,37 @@ contract  repay{
     }
    
 
-  //预售   时间戳未成功
+  //预售   时间戳成功
     function preasle(uint256 buynum)public{
         uint256  paynum=buynum*presalePrice/10**18;
-        uint256 time=block.timestamp;
-        require(time>=1657382225&time<=1658283109,"over");
+       uint256 time=block.timestamp;
+       require(time>=1657525732&&time<=1657825999,"over"); 
         IERC20(usdttoken).transferFrom(msg.sender,address(this),paynum);
         presaleToken+=paynum;   
         IERC20(axstoken).transfer(msg.sender,paynum);
-        address account=msg.sender;
-        users.push[account];
-        values.push[paynum];
+        users.push(msg.sender);
+        values.push(paynum);
     }
 
-    function buyAmount(uint8 num1) public returns(address,uint256){
-        return  users[unm1];
-        return  values[num1];
 
-    }
 
-//收入的usdt转指定地址
+//预售结束后转入的usdt转出到指定地址
     function withdraw() public {
-        uint256 amount=IERC20(usdttoken).balanceOf(address(this));
+        uint256 time=block.timestamp;
+        require(time>1657825999,"over");
+        uint256 amount=IERC20(usdttoken).balanceOf(address(this));       
         IERC20(usdttoken).transfer(0x529Aa0dB82defd69Af731220C5A7b34d72E48c9F,amount);
+    }
+
+    function recaptionAXS()public returns(uint256){
+        uint256 time=block.timestamp;
+        require(time>1657825999,"over");
+        address account=msg.sender;
+        for(uint256 i=0;users[i]==account;i++){
+            uint256 amount=values[i];
+            IERC20(axstoken).transfer(account,amount);
+            break;
+        }
     }
   
 
